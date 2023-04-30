@@ -10,7 +10,7 @@ const userrouter = express.Router();
 userrouter.get("/", async (req, res) => {
   try {
     const notes = await User.find();
-    res.send(notes);
+    res.send(notes.reverse());
   } catch (error) {
     console.log(error)
   }
@@ -254,7 +254,6 @@ userrouter.put("/:id/unfollow", async (req, res) => {
     res.status(403).json("you cant unfollow yourself");
   }
 });
-
 
 // Search 
 

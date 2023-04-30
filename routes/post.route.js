@@ -8,7 +8,7 @@ const postrouter = express.Router();
 postrouter.get("/", async (req, res) => {
     try {
       const notes = await Post.find();
-      res.send(notes);
+      res.send(notes.reverse());
     } catch (error) {
       console.log(error)
     }
@@ -97,7 +97,7 @@ postrouter.get("/:id", async (req, res) => {
 postrouter.get("/userpost/:id", async (req, res) => {
   try {
     const post = await Post.find({userId:req.params.id});
-    res.status(200).json(post);
+    res.status(200).json(post.reverse());
   } catch (err) {
     res.status(500).json(err);
   }
@@ -133,19 +133,29 @@ postrouter.get("/profile/:username", async (req, res) => {
 });
 
 
-
+//comment
 postrouter.put("/:id/comment", async (req, res) => {
+  const postId  = req.params.id;
+  const { username,profilePicture,comment,curenttime } = req.body;
+
   try {
-    const post = await Post.findById(req.params.id);
-    if (!post.likes.includes(req.body.userId)) {
-      await post.updateOne({ $push: { comment: req.body.userId } });
-      res.status(200).json("The post has been liked");
-    } else {
-      await post.updateOne({ $pull: { likes: req.body.userId } });
-      res.status(200).json("The post has been disliked");
+    const post = await Post.findById(postId);
+
+    if (!post) {
+      return res.status(404).json({ msg: "Post not found" });
     }
+
+    const newComment = { username, profilePicture, comment,curenttime };
+
+    post.comment.push(newComment);
+
+    await post.save();
+
+    res.status(200).json({ msg: "Comment added successfully" });
+    
   } catch (err) {
-    res.status(500).json(err);
+    console.error(err.message);
+    res.status(500).send("Server Error");
   }
 });
 
