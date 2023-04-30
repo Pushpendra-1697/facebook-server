@@ -16,7 +16,7 @@ app.get('/', async(req,res) => {
 
 //Socket.io
 const { Server } = require('socket.io');
-const io = new Server(8088, {
+const io = new Server(8000, {
   cors: true
 });
 const emailToSocketIdMap = new Map();
