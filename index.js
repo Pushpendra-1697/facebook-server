@@ -1,12 +1,14 @@
 const express = require("express");
+let app = express();
 const cors = require("cors");
 const { connection } = require("./config/db");
-const { userrouter } = require("./routes/user.route");
 require("dotenv").config();
+
+const { userrouter } = require("./routes/user.route");
 const { postrouter } = require("./routes/post.route");
 
-let app = express();
 app.use(express.json());
+app.use(express.text());
 app.use(cors());
 
 app.get('/', async(req,res) => {

@@ -6,22 +6,18 @@ const postrouter = express.Router();
 
 // get post
 postrouter.get("/", async (req, res) => {
-    try {
-      const notes = await Post.find();
-      res.send(notes.reverse());
-    } catch (error) {
-      console.log(error)
-    }
-  
-  });
-
-
-
+  try {
+    const posts = await Post.find();
+    res.send(posts.reverse());
+  } catch (error) {
+    console.log(error)
+  }
+});
 
 //create a post
-
 postrouter.post("/", async (req, res) => {
   const newPost = new Post(req.body);
+  console.log(newPost)
   try {
     const savedPost = await newPost.save();
     res.status(200).json(savedPost)
@@ -32,7 +28,6 @@ postrouter.post("/", async (req, res) => {
 
 
 //update a post
-
 postrouter.put("/:id", async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
@@ -46,11 +41,9 @@ postrouter.put("/:id", async (req, res) => {
     res.status(500).json(err);
   }
 });
+
 //delete a post
-
 postrouter.delete("/:id", async (req, res) => {
-
-  // console.log(req.body.userId);
   try {
     const post = await Post.findById(req.params.id);
     if (post.userId === req.body.userId) {
@@ -63,8 +56,8 @@ postrouter.delete("/:id", async (req, res) => {
     res.status(500).json(err);
   }
 });
-//like / dislike a post
 
+//like / dislike a post
 postrouter.put("/:id/like", async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
@@ -79,8 +72,8 @@ postrouter.put("/:id/like", async (req, res) => {
     res.status(500).json(err);
   }
 });
-//get a post
 
+//get a paricular user post by user id;
 postrouter.get("/:id", async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
@@ -91,12 +84,10 @@ postrouter.get("/:id", async (req, res) => {
 });
 
 
-// get post by userId
-
-
+//get a paricular user post by user id;
 postrouter.get("/userpost/:id", async (req, res) => {
   try {
-    const post = await Post.find({userId:req.params.id});
+    const post = await Post.find({ userId: req.params.id });
     res.status(200).json(post.reverse());
   } catch (err) {
     res.status(500).json(err);
@@ -104,7 +95,6 @@ postrouter.get("/userpost/:id", async (req, res) => {
 });
 
 //get timeline posts
-
 postrouter.get("/timeline/:userId", async (req, res) => {
   try {
     const currentUser = await User.findById(req.params.userId);
@@ -135,33 +125,23 @@ postrouter.get("/profile/:username", async (req, res) => {
 
 //comment
 postrouter.put("/:id/comment", async (req, res) => {
-  const postId  = req.params.id;
-  const { username,profilePicture,comment,curenttime } = req.body;
-
+  const postId = req.params.id;
+  const { username, profilePicture, comment, curenttime } = req.body;
   try {
     const post = await Post.findById(postId);
-
     if (!post) {
       return res.status(404).json({ msg: "Post not found" });
     }
-
-    const newComment = { username, profilePicture, comment,curenttime };
-
+    const newComment = { username, profilePicture, comment, curenttime };
     post.comment.push(newComment);
-
     await post.save();
-
     res.status(200).json({ msg: "Comment added successfully" });
-    
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server Error");
   }
 });
 
-
-
-
 module.exports = {
-    postrouter,
-  };
+  postrouter,
+};
